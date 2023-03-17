@@ -51,7 +51,7 @@
 //esta fora do ar
 
 //EndPoints para listar todos os estados
-app.get('/estados', cors(), async function (request, response, next) {
+app.get('/v1/senai/estados', cors(), async function (request, response, next) {
     
     
     //Chama a função que vai todos os estados
@@ -73,7 +73,7 @@ app.get('/estados', cors(), async function (request, response, next) {
 //
 
 //EndPoint : Lista os adados do estados filtrando pela sigla do estado
-app.get('/estado/:uf', cors(), async function(request, response, next){
+app.get('/v1/senai/estado/:uf', cors(), async function(request, response, next){
     let statusCode
     let dadosEstado = {}
 
@@ -103,8 +103,102 @@ app.get('/estado/:uf', cors(), async function(request, response, next){
     response.status(statusCode)
     response.json(dadosEstado)
 })
+app.get('/v1/senai/estadoCapital/:uf', cors(), async function(request, response, next){
+    let statusCode
+    let dadosEstado = {}
 
+    let siglaEstado = request.params.uf
 
+    if(siglaEstado == '' || siglaEstado == undefined || siglaEstado.length != 2 || !isNaN(siglaEstado)){
+        statusCode = 400
+        dadosEstado.message = 'Não foi possivel processar pois os dados de entrada (reigiao) que foi enviado não corresponde ao exigido, confira o valor, pois não pode ser vazio e precisa ser caracteres.'
+    } else {
+        let estadoCapital = estadosCidades.getCapitalEstado(siglaEstado)
+
+        if(estadoCapital){
+            statusCode = 200
+            dadosEstado = estadoCapital
+        } else {
+            statusCode = 404
+        }
+    }
+    response.status(statusCode)
+    response.json(dadosEstado)
+})
+
+app.get('/v1/senai/estadoRegiao/:regiao', cors(), async function(request, response, next){
+    let statusCode
+    let dadosEstado = {}
+
+    let siglaEstado = request.params.regiao
+
+    if(siglaEstado == '' || siglaEstado == undefined || !isNaN(siglaEstado)){
+        statusCode = 400
+        dadosEstado.message = 'Não foi possivel processar pois os dados de entrada (uf) que foi enviado não corresponde ao exigido, confira o valor, pois não pode ser vazio, precisa ser caracteres e ter 2 digitos'
+    } else {
+        let estadoCapital = estadosCidades.getEstadosRegiao(siglaEstado)
+        console.log(estadosCidades.getEstadosRegiao(siglaEstado))
+        if(estadoCapital){
+            statusCode = 200
+            dadosEstado = estadoCapital
+        } else {
+            statusCode = 404
+        }
+    }
+    response.status(statusCode)
+    response.json(dadosEstado)
+})
+
+app.get('/v1/senai/estadosCapitalPais', cors(), async function(request, response, next){
+    let statusCode
+    let dadosEstado = {}
+    
+    let estados = estadosCidades.getCapitalPais()
+
+    if(estados){
+        statusCode = 200
+        dadosEstado = estados
+    } else{
+        statusCode = 500
+    }
+    
+response.status(statusCode)
+response.json(dadosEstado)
+})
+
+app.get('/v1/senai/estadoCidade/estados/sigla/:uf', cors(), async function(request, response, next){
+    let statusCode
+    let dadosEstado = {}
+
+    let siglaEstado = request.params.uf
+
+    if(siglaEstado == '' || siglaEstado == undefined || siglaEstado.length != 2 || !isNaN(siglaEstado)){
+        statusCode = 400
+        dadosEstado.message = 'Não foi possivel processar pois os dados de entrada (uf) que foi enviado não corresponde ao exigido, confira o valor, pois não pode ser vazio, precisa ser caracteres e ter 2 digitos'
+    } else {
+        let estadoCapital = estadosCidades.getCidades(siglaEstado)
+
+        if(estadoCapital){
+            statusCode = 200
+            dadosEstado = estadoCapital
+        } else {
+            statusCode = 404
+        }
+    }
+    response.status(statusCode)
+    response.json(dadosEstado)
+})
+
+app.get('/v2/senai/cidades', cors(), async function(request, response, next){
+    
+    let siglaEstado = request.query.uf
+    let cepEstado = request.query.cep
+    let populacaoEstado = request.query.populacao
+
+    console.log(siglaEstado)
+    console.log(cepEstado)
+    console.log(populacaoEstado)
+})
 //Roda o serviço da API para ficar aguardando requisições
 app.listen(8080, function () {
     console.log('Servidor aguardando requisições na porta 8080')

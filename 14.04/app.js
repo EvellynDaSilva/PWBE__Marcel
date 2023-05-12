@@ -30,6 +30,9 @@ app.use((request, response, next) => {
  * Versão: 1.0
  ***************************************************/
 
+ //Define que os dados que irão chegar no body da requisição será no padrão JSON
+const bodyParserJSON = bodyParser.json();
+
 //EndPoint:Retorna todos os dados de alunos
 app.get('/v1/lion-shool/aluno', cors(), async function (resquest, reponse) {
     //Import do arquivo da controller que irá solicitar a model os dados do banco de dados

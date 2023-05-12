@@ -5,9 +5,37 @@
  * Versão: 1.0
  *************************************************************************************************************/
 
- //Inerir dados do aluno no Banco de Dados
- const insertAluno = function(){
+ //Import da biblioteca do prisma client
+ var { PrismaClient } = require('@prisma/client')
 
+ //Instancia da classe PrismaClient
+ var prisma = new PrismaClient()
+
+ //Inerir dados do aluno no Banco de Dados
+ const insertAluno = async function(dadosAluno){
+
+    //scriptSQL para inserir dados
+    let sql =`insert into tbl_aluno (
+                        nome,
+                        rg,
+                        cpf,
+                        data_nascimento,
+                        email
+                        )values(
+                        '${dadosAluno.nome}',
+                        '${dadosAluno.rg}',
+                        '${dadosAluno.cpf}',
+                        '${dadosAluno.data_nascimento}',
+                        '${dadosAluno.email}'
+                        )`;
+
+        //Executa o scriptSQL no banco de dados
+    let resultStatus = await prisma.$queryRawUnsafe(sql)
+
+    if(resultStatus)
+        return true;
+    else
+        return false
 };
 
 //Atualizar dados do aluno no Banco de Dados
@@ -22,11 +50,7 @@ const deleteAluno = function(){
 
 //Retornar todos os alunos no Banco de Dados
 const selectAllAlunos = async function(){
-    //Import da biblioteca do prisma client
-    let { PrismaClient } = require('@prisma/client')
-
-    //Instancia da classe PrismaClient
-    let prisma = new PrismaClient()
+    
 
     //ScriptSQL para buscar todos os itens no banco de dados
     let sql = 'select * from tbl_aluno'
@@ -49,6 +73,7 @@ const selectByIdAlunos = function(){
 };
 
 module.exports ={
-    selectAllAlunos
+    selectAllAlunos,
+    insertAluno
 }
 
